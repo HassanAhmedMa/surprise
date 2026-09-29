@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Happy Birthday, My Love</title>
+  
+  <!-- Modern Clean Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,400;1,600&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+  
+  <!-- Clean Luxury Monogram Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2246%22 fill=%22%23E11D48%22/><text x=%2250%22 y=%2266%22 font-size=%2248%22 text-anchor=%22middle%22 fill=%22white%22 font-family=%22serif%22 font-weight=%22bold%22>H</text></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ambient Floating Bokeh / Background Glow -->
+  <div class="ambient-bg">
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+    <div class="glow-orb orb-3"></div>
+  </div>
+
+  <!-- Flying Balloons Canvas / Container for Finale -->
+  <div id="balloons-container" class="balloons-layer" aria-hidden="true"></div>
+
+  <!-- Dedicated Floating Hearts Container -->
+  <div id="floating-hearts-layer" class="hearts-floating-layer" aria-hidden="true"></div>
+
+  <!-- Audio Toggle Bar (Top Right) with Clean SVG Audio Wave -->
+  <button id="audio-toggle-btn" class="audio-fab" title="Toggle Romantic Ambiance" aria-label="Toggle Sound">
+    <svg class="audio-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+      <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+      <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+    </svg>
+  </button>
+
+  <!-- ========================================================
+       STAGE 0: COUNTDOWN SCREEN (Clean, No Emojis)
+       ======================================================== -->
+  <section id="countdown-screen" class="active-stage">
+    <div class="countdown-panel">
+      <div class="countdown-aura"></div>
+      
+      <div class="circular-timer-wrapper">
+        <svg class="progress-ring" viewBox="0 0 160 160">
+          <circle class="ring-bg" cx="80" cy="80" r="70" />
+          <circle id="countdown-ring-fill" class="ring-fill" cx="80" cy="80" r="70" />
+        </svg>
+        
+        <div class="timer-center-content">
+          <div id="countdown-number" class="countdown-digit">5</div>
+        </div>
+      </div>
+
+      <div class="countdown-text-group">
+        <h2 class="countdown-tagline">A special surprise is getting ready</h2>
+        <p class="countdown-sub">Just for you</p>
+      </div>
+
+      <!-- Confetti Burst Container for Center Panel -->
+      <canvas id="countdown-confetti-canvas" class="panel-confetti-canvas"></canvas>
+    </div>
+  </section>
+
+  <!-- ========================================================
+       STAGE 1-4: SINGLE FORM CARD CONTAINER (Centered in Screen)
+       ======================================================== -->
+  <main id="form-container" class="form-wrapper hidden">
+    
+    <!-- Step Progress Dots -->
+    <div class="steps-progress" id="steps-indicator">
+      <span class="step-dot active" data-step="1"></span>
+      <span class="step-dot" data-step="2"></span>
+      <span class="step-dot" data-step="3"></span>
+      <span class="step-dot" data-step="4"></span>
+    </div>
+
+    <!-- ----------------------------------------------------
+         FORM STEP 1: Date Question
+         ---------------------------------------------------- -->
+    <div class="step-card active" id="step-1-card">
+      <div class="card-badge">
+        <span class="badge-dot"></span>
+        <span class="badge-text">A Special Question</span>
+      </div>
+
+      <h1 id="date-question-title" class="question-headline">
+        Will you go on a date with me?
+      </h1>
+      
+      <p id="date-question-sub" class="question-subtitle">
+        I know someone who would be the happiest person in the world.
+      </p>
+
+      <div class="actions-row actions-step1">
+        <button id="btn-date-yes" class="btn-primary btn-glow">
+          <span class="btn-text">Yes, of course</span>
+        </button>
+        
+        <button id="btn-date-no" class="btn-secondary btn-no-interactive">
+          <span class="btn-text">No</span>
+        </button>
+      </div>
+      
+      <div id="date-no-hint" class="playful-hint"></div>
+    </div>
+
+    <!-- ----------------------------------------------------
+         FORM STEP 2: Calendar & Time Picker
+         ---------------------------------------------------- -->
+    <div class="step-card" id="step-2-card">
+      <div class="card-badge">
+        <span class="badge-dot"></span>
+        <span class="badge-text">Schedule Our Date</span>
+      </div>
+
+      <h1 class="question-headline">
+        When are we going?
+      </h1>
+      
+      <p class="question-subtitle">
+        Choose a time that suits you best ahead of today.
+      </p>
+
+      <form id="datetime-form" class="datetime-picker-box" onsubmit="return false;">
+        <div class="input-wrapper">
+          <label for="date-picker-input" class="input-label">Date & Time</label>
+          <div class="custom-input-shell">
+            <svg class="calendar-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            <input type="datetime-local" id="date-picker-input" required class="sleek-datetime-input">
+          </div>
+        </div>
+
+        <!-- Quick Presets -->
+        <div class="preset-chips-label">Quick suggestions:</div>
+        <div class="chips-container">
+          <button type="button" class="preset-chip" data-preset="tonight">Tonight at 8:00 PM</button>
+          <button type="button" class="preset-chip" data-preset="tomorrow">Tomorrow at 7:30 PM</button>
+          <button type="button" class="preset-chip" data-preset="friday">Friday Night</button>
+          <button type="button" class="preset-chip" data-preset="saturday">Saturday Sunset</button>
+        </div>
+
+        <div id="datetime-error-msg" class="validation-message hidden">
+          Please select a future date and time.
+        </div>
+
+        <button type="button" id="btn-submit-datetime" class="btn-primary btn-full btn-glow">
+          <span>Confirm Our Date</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- ----------------------------------------------------
+         FORM STEP 3: "Do you love me?" Question
+         ---------------------------------------------------- -->
+    <div class="step-card" id="step-3-card">
+      <div class="card-badge">
+        <span class="badge-dot"></span>
+        <span class="badge-text">Heart Check</span>
+      </div>
+
+      <h1 class="question-headline">
+        Do you love me?
+      </h1>
+      
+      <p class="question-subtitle">
+        Answer with your full heart.
+      </p>
+
+      <div class="actions-group actions-step3">
+        <button id="btn-love-no" class="btn-step3 btn-step3-no btn-bubble-pop" type="button">
+          <span class="step3-label">No</span>
+        </button>
+        
+        <button id="btn-love-nosnos" class="btn-step3 btn-step3-nosnos" type="button">
+          <span class="step3-label">nos nos</span>
+          <span class="step3-sub">50 / 50</span>
+        </button>
+        
+        <button id="btn-love-yes" class="btn-step3 btn-step3-yes btn-glow" type="button">
+          <span class="step3-label">Yes</span>
+        </button>
+      </div>
+
+      <div id="love-pop-feedback" class="playful-hint"></div>
+    </div>
+
+    <!-- ----------------------------------------------------
+         FORM STEP 4: Restaurant & Coffee Selection
+         ---------------------------------------------------- -->
+    <div class="step-card step-card-large" id="step-4-card">
+      <div class="card-badge">
+        <span class="badge-dot"></span>
+        <span class="badge-text">Destination</span>
+      </div>
+
+      <h1 class="question-headline">
+        Where should we celebrate?
+      </h1>
+      
+      <p class="question-subtitle">
+        Pick our dream spot for dinner or sweet coffee & dessert
+      </p>
+
+      <!-- Segmented Switch -->
+      <div class="tabs-segmented-control" role="tablist">
+        <button type="button" id="tab-btn-dinner" class="tab-btn active" role="tab" aria-selected="true">
+          <span class="tab-text">Romantic Dinner</span>
+        </button>
+        <button type="button" id="tab-btn-coffee" class="tab-btn" role="tab" aria-selected="false">
+          <span class="tab-text">Coffee & Vibes</span>
+        </button>
+      </div>
+
+      <!-- Places List: DINNER -->
+      <div id="places-dinner-list" class="places-grid active-tab-content">
+        
+        <!-- Dinner 1: CIO x Trattoria Italiana -->
+        <article class="place-card" data-place-id="cio" data-place-name="CIO x Trattoria Italiana" data-place-type="Dinner" data-place-area="Heliopolis" data-place-img="assets/places/cio_trattoria.jpg">
+          <div class="place-image-wrap">
+            <img src="assets/places/cio_trattoria.jpg" alt="CIO x Trattoria Italiana" class="place-thumb" loading="lazy">
+            <span class="place-type-badge">Italian Trattoria</span>
+          </div>
+          <div class="place-info">
+            <div class="place-title-row">
+              <h3 class="place-name">CIO x Trattoria Italiana</h3>
+              <div class="place-rating">★ 4.5 <span class="rating-count">(1,434)</span></div>
+            </div>
+            <p class="place-address">21 Cleopatra, Almazah, Heliopolis</p>
+            <p class="place-desc">Wood-fired authentic pizza, handmade pastas, and enchanting outdoor terrace lights.</p>
+            <div class="place-bottom-row">
+              <span class="place-price">E£200–400</span>
+              <button type="button" class="btn-select-place">Select</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Dinner 2: Primo's Pizza -->
+        <article class="place-card" data-place-id="primos" data-place-name="Primo's Pizza" data-place-type="Dinner" data-place-area="Sheraton" data-place-img="assets/places/primos_pizza.jpg">
+          <div class="place-image-wrap">
+            <img src="assets/places/primos_pizza.jpg" alt="Primo's Pizza" class="place-thumb" loading="lazy">
+            <span class="place-type-badge">Artisan Pizza</span>
+          </div>
+          <div class="place-info">
+            <div class="place-title-row">
+              <h3 class="place-name">Primo's Pizza</h3>
+              <div class="place-rating">★ 4.8 <span class="rating-count">(429)</span></div>
+            </div>
+            <p class="place-address">Abd El-Hameed Badawi, Sheraton Al Matar</p>
+            <p class="place-desc">Mouthwatering specialty pizzas, legendary cheese pull, and warm casual date vibes.</p>
+            <div class="place-bottom-row">
+              <span class="place-price">E£200–400</span>
+              <button type="button" class="btn-select-place">Select</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Dinner 3: Tree Trunk -->
+        <article class="place-card" data-place-id="treetrunk" data-place-name="Tree Trunk" data-place-type="Dinner" data-place-area="Korba" data-place-img="assets/places/tree_trunk.jpg">
+          <div class="place-image-wrap">
+            <img src="assets/places/tree_trunk.jpg" alt="Tree Trunk" class="place-thumb" loading="lazy">
+            <span class="place-type-badge">Bohemian Cozy</span>
+          </div>
+          <div class="place-info">
+            <div class="place-title-row">
+              <h3 class="place-name">Tree Trunk</h3>
+              <div class="place-rating">★ 4.6 <span class="rating-count">(12,074)</span></div>
+            </div>
+            <p class="place-address">9 El-Thawra St, Korba, Heliopolis</p>
+            <p class="place-desc">Magical fairy lights, wooden vintage aesthetics, and a truly romantic ambiance.</p>
+            <div class="place-bottom-row">
+              <span class="place-price">E£200–1,200</span>
+              <button type="button" class="btn-select-place">Select</button>
+            </div>
+          </div>
+        </article>
+
+      </div>
+
+      <!-- Places List: COFFEE -->
+      <div id="places-coffee-list" class="places-grid hidden-tab-content">
+        
+        <!-- Coffee 1: Second Cup Korba -->
+        <article class="place-card" data-place-id="secondcup" data-place-name="Second Cup Korba" data-place-type="Coffee" data-place-area="Korba" data-place-img="assets/places/second_cup.jpg">
+          <div class="place-image-wrap">
+            <img src="assets/places/second_cup.jpg" alt="Second Cup Korba" class="place-thumb" loading="lazy">
+            <span class="place-type-badge">Specialty Roasts</span>
+          </div>
+          <div class="place-info">
+            <div class="place-title-row">
+              <h3 class="place-name">Second Cup Korba</h3>
+              <div class="place-rating">★ 4.4 <span class="rating-count">(2,967)</span></div>
+            </div>
+            <p class="place-address">El-Montaza, Korba, Heliopolis</p>
+            <p class="place-desc">Classic Korba street views, rich artisan espresso, signature iced lattes, and desserts.</p>
+            <div class="place-bottom-row">
+              <span class="place-price">E£200–400</span>
+              <button type="button" class="btn-select-place">Select</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Coffee 2: Armada Cafe -->
+        <article class="place-card" data-place-id="armada" data-place-name="Armada Cafe" data-place-type="Coffee" data-place-area="El Nozha" data-place-img="assets/places/armada_cafe.jpg">
+          <div class="place-image-wrap">
+            <img src="assets/places/armada_cafe.jpg" alt="Armada Cafe" class="place-thumb" loading="lazy">
+            <span class="place-type-badge">24/7 Chill Patio</span>
+          </div>
+          <div class="place-info">
+            <div class="place-title-row">
+              <h3 class="place-name">Armada Cafe</h3>
+              <div class="place-rating">★ 3.2 <span class="rating-count">(64)</span></div>
+            </div>
+            <p class="place-address">29 Abd El-Hameed Badawi, El Nozha</p>
+            <p class="place-desc">Open 24 hours with an airy open-view terrace, fresh juices, and chill evening conversations.</p>
+            <div class="place-bottom-row">
+              <span class="place-price">E£1–200</span>
+              <button type="button" class="btn-select-place">Select</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Coffee 3: Cilantro Cafe Korba -->
+        <article class="place-card" data-place-id="cilantro" data-place-name="Cilantro Korba" data-place-type="Coffee" data-place-area="Korba" data-place-img="assets/places/cilantro_cafe.jpg">
+          <div class="place-image-wrap">
+            <img src="assets/places/cilantro_cafe.jpg" alt="Cilantro Cafe Korba" class="place-thumb" loading="lazy">
+            <span class="place-type-badge">Cozy Artisan Corner</span>
+          </div>
+          <div class="place-info">
+            <div class="place-title-row">
+              <h3 class="place-name">Cilantro Cafe Korba</h3>
+              <div class="place-rating">★ 4.5 <span class="rating-count">(1,890)</span></div>
+            </div>
+            <p class="place-address">Korba, Heliopolis</p>
+            <p class="place-desc">Intimate cafe seating, warm cinnamon rolls, velvety cappuccinos, and peaceful talks.</p>
+            <div class="place-bottom-row">
+              <span class="place-price">E£150–350</span>
+              <button type="button" class="btn-select-place">Select</button>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ========================================================
+       FULL-SCREEN "NOS NOS" PATTERN TAKEOVER (10 Seconds)
+       ======================================================== -->
+  <section id="nosnos-screen" class="nosnos-fullscreen-overlay hidden">
+    <!-- Kinetic Typography Rows -->
+    <div class="nosnos-rows-container">
+      <div class="marquee-row to-left"><div class="marquee-content">NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; </div></div>
+      <div class="marquee-row to-right"><div class="marquee-content">NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; </div></div>
+      <div class="marquee-row to-left"><div class="marquee-content">NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; </div></div>
+      <div class="marquee-row to-right"><div class="marquee-content">NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; </div></div>
+      <div class="marquee-row to-left"><div class="marquee-content">NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; </div></div>
+      <div class="marquee-row to-right"><div class="marquee-content">NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; </div></div>
+      <div class="marquee-row to-left"><div class="marquee-content">NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; </div></div>
+      <div class="marquee-row to-right"><div class="marquee-content">NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; </div></div>
+      <div class="marquee-row to-left"><div class="marquee-content">NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; </div></div>
+      <div class="marquee-row to-right"><div class="marquee-content">NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; </div></div>
+      <div class="marquee-row to-left"><div class="marquee-content">NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; </div></div>
+      <div class="marquee-row to-right"><div class="marquee-content">NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; NOS NOS &bull; </div></div>
+    </div>
+
+    <!-- Centered Glass Timer Card -->
+    <div class="nosnos-center-badge">
+      <div class="nosnos-badge-inner">
+        <h2 class="nosnos-title">NOS NOS DETECTED</h2>
+        <p class="nosnos-subtitle">Half and half? A ten-second kinetic pause.</p>
+        
+        <div class="nosnos-timer-circle">
+          <svg viewBox="0 0 80 80">
+            <circle class="timer-bg" cx="40" cy="40" r="34" />
+            <circle id="nosnos-progress-circle" class="timer-bar" cx="40" cy="40" r="34" />
+          </svg>
+          <span id="nosnos-seconds-counter" class="timer-num">10</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================
+       STAGE 5: FINAL CELEBRATION & SCROLL-DOWN SHOWCASE
+       ======================================================== -->
+  <section id="celebration-screen" class="celebration-page hidden">
+    
+    <!-- Hero Banner -->
+    <header class="celebration-hero">
+      <div class="hero-badge">
+        <span>A CELEBRATION OF YOU</span>
+      </div>
+      <h1 class="hero-title">Happy Birthday,<br><span class="hero-highlight">My Beautiful Love</span></h1>
+      <p class="hero-subtitle">
+        Every second with you is a gift, and today we celebrate the most incredible person in my world.
+      </p>
+
+      <div class="scroll-down-hint">
+        <span class="hint-text">Scroll down for our date & memories</span>
+        <div class="scroll-mouse-icon">
+          <span class="wheel"></span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content Sections Container -->
+    <div class="celebration-body-container">
+
+      <!-- 1. OFFICIAL VIP DATE PASS -->
+      <section class="section-block date-ticket-section">
+        <div class="section-header">
+          <span class="section-tag">OFFICIAL RESERVATION</span>
+          <h2 class="section-title">Our Confirmed Date Itinerary</h2>
+        </div>
+
+        <div class="vip-ticket-card">
+          <div class="ticket-left">
+            <div class="ticket-badge-row">
+              <span class="ticket-status-pill">CONFIRMED</span>
+              <span class="ticket-id">DATE-PASS #2026</span>
+            </div>
+            
+            <div class="ticket-main-info">
+              <div class="ticket-venue-thumb-wrap">
+                <img id="ticket-venue-img" src="assets/places/cio_trattoria.jpg" alt="Selected Venue" class="ticket-venue-thumb">
+              </div>
+              <div class="ticket-venue-details">
+                <div class="ticket-label">DESTINATION</div>
+                <h3 id="ticket-venue-name" class="ticket-venue-title">CIO x Trattoria Italiana</h3>
+                <p id="ticket-venue-area" class="ticket-venue-loc">Heliopolis, Cairo</p>
+              </div>
+            </div>
+
+            <div class="ticket-grid-meta">
+              <div class="ticket-meta-item">
+                <span class="meta-label">SCHEDULED DATE & TIME</span>
+                <span id="ticket-datetime-val" class="meta-val">Tonight at 8:00 PM</span>
+              </div>
+              <div class="ticket-meta-item">
+                <span class="meta-label">LOVE LEVEL</span>
+                <span id="ticket-love-status" class="meta-val">Officially Confirmed</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ticket-divider">
+            <span class="notch notch-top"></span>
+            <span class="dash-line"></span>
+            <span class="notch notch-bottom"></span>
+          </div>
+
+          <div class="ticket-right">
+            <div class="barcode-graphic">
+              <div class="barcode-lines"></div>
+              <span class="barcode-num">FOREVER &bull; WITH &bull; YOU</span>
+            </div>
+            <div class="vip-seal">
+              <span class="vip-seal-monogram">H</span>
+              <small>APPROVED</small>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. WARM & PREMIUM PHOTO GALLERY FRAMES -->
+      <section class="section-block photo-gallery-section">
+        <div class="section-header">
+          <span class="section-tag">CAPTURED MOMENTS</span>
+          <h2 class="section-title">Our Favorite Memories</h2>
+          <p class="section-sub">Framed with endless love, laughter, and warm moments.</p>
+        </div>
+
+        <div class="frames-grid">
+          
+          <!-- Frame 1: The Glow in Your Eyes -->
+          <div class="premium-frame frame-tilt-left frame-portrait" data-img="assets/gallery/photo_01.jpg" data-caption="That smile in the car that never fails to make my whole day.">
+            <div class="frame-pin"></div>
+            <div class="frame-inner">
+              <div class="frame-img-box pos-portrait-top">
+                <img src="assets/gallery/photo_01.jpg" alt="Memory 1" class="frame-photo" loading="lazy">
+              </div>
+              <div class="frame-caption">
+                <span class="caption-date">The Glow in Your Eyes</span>
+                <p class="caption-text">"That smile that never fails to brighten my whole world."</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Frame 2: Us Together (Hassan & Her) -->
+          <div class="premium-frame frame-tilt-right frame-portrait" data-img="assets/gallery/photo_02.jpg" data-caption="My favorite picture of us together. Being by your side is home.">
+            <div class="frame-pin"></div>
+            <div class="frame-inner">
+              <div class="frame-img-box pos-portrait-top">
+                <img src="assets/gallery/photo_02.jpg" alt="Memory 2" class="frame-photo" loading="lazy">
+              </div>
+              <div class="frame-caption">
+                <span class="caption-date">Us, Always</span>
+                <p class="caption-text">"My favorite picture of us. Being by your side is home."</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Frame 3: Landscape Car Selfie -->
+          <div class="premium-frame frame-tilt-center frame-landscape" data-img="assets/gallery/photo_03.jpg" data-caption="Effortless, gorgeous, and absolutely breathtaking.">
+            <div class="frame-pin"></div>
+            <div class="frame-inner">
+              <div class="frame-img-box pos-center">
+                <img src="assets/gallery/photo_03.jpg" alt="Memory 3" class="frame-photo" loading="lazy">
+              </div>
+              <div class="frame-caption">
+                <span class="caption-date">Pure Elegance</span>
+                <p class="caption-text">"Effortless, gorgeous, and absolutely breathtaking."</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Frame 4: Quiet Beauty -->
+          <div class="premium-frame frame-tilt-left frame-portrait" data-img="assets/gallery/photo_04.jpg" data-caption="The kind of peace and beauty I could admire forever.">
+            <div class="frame-pin"></div>
+            <div class="frame-inner">
+              <div class="frame-img-box pos-portrait-top">
+                <img src="assets/gallery/photo_04.jpg" alt="Memory 4" class="frame-photo" loading="lazy">
+              </div>
+              <div class="frame-caption">
+                <span class="caption-date">Quiet Beauty</span>
+                <p class="caption-text">"The kind of peace and beauty I could admire forever."</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Frame 5: Playful Vibes -->
+          <div class="premium-frame frame-tilt-right frame-portrait" data-img="assets/gallery/photo_05.jpg" data-caption="That cute little pout that melts my heart every single time.">
+            <div class="frame-pin"></div>
+            <div class="frame-inner">
+              <div class="frame-img-box pos-portrait-top">
+                <img src="assets/gallery/photo_05.jpg" alt="Memory 5" class="frame-photo" loading="lazy">
+              </div>
+              <div class="frame-caption">
+                <span class="caption-date">Playful Vibes</span>
+                <p class="caption-text">"That cute expression that melts my heart every single time."</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Frame 6: Golden Hour Sun -->
+          <div class="premium-frame frame-tilt-left frame-portrait" data-img="assets/gallery/photo_06.jpg" data-caption="The sun was trying to shine, but you outshined everything.">
+            <div class="frame-pin"></div>
+            <div class="frame-inner">
+              <div class="frame-img-box pos-portrait-top">
+                <img src="assets/gallery/photo_06.jpg" alt="Memory 6" class="frame-photo" loading="lazy">
+              </div>
+              <div class="frame-caption">
+                <span class="caption-date">Golden Hour</span>
+                <p class="caption-text">"The sun was shining, but you outshined everything."</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Frame 7: Night Walks in Purple -->
+          <div class="premium-frame frame-tilt-right frame-portrait" data-img="assets/gallery/photo_07.jpg" data-caption="The brightest and warmest smile under the city lights.">
+            <div class="frame-pin"></div>
+            <div class="frame-inner">
+              <div class="frame-img-box pos-portrait-top">
+                <img src="assets/gallery/photo_07.jpg" alt="Memory 7" class="frame-photo" loading="lazy">
+              </div>
+              <div class="frame-caption">
+                <span class="caption-date">Night Walks</span>
+                <p class="caption-text">"The brightest and warmest smile under the city lights."</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Frame 8: Car Adventures -->
+          <div class="premium-frame frame-tilt-left frame-portrait" data-img="assets/gallery/photo_08.jpg" data-caption="Singing together, laughing about everything, and endless happiness.">
+            <div class="frame-pin"></div>
+            <div class="frame-inner">
+              <div class="frame-img-box pos-portrait-top">
+                <img src="assets/gallery/photo_08.jpg" alt="Memory 8" class="frame-photo" loading="lazy">
+              </div>
+              <div class="frame-caption">
+                <span class="caption-date">Car Ride Joy</span>
+                <p class="caption-text">"Singing along, laughing, and endless pure happiness."</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Frame 9: That Cute Squinch Face -->
+          <div class="premium-frame frame-tilt-right frame-portrait" data-img="assets/gallery/photo_09.jpg" data-caption="Your funny, sweetest moments are the ones I cherish most.">
+            <div class="frame-pin"></div>
+            <div class="frame-inner">
+              <div class="frame-img-box pos-center">
+                <img src="assets/gallery/photo_09.jpg" alt="Memory 9" class="frame-photo" loading="lazy">
+              </div>
+              <div class="frame-caption">
+                <span class="caption-date">Cutest Smile</span>
+                <p class="caption-text">"Your funny, sweetest moments are the ones I cherish most."</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Frame 10: Emerald Green Night -->
+          <div class="premium-frame frame-tilt-left frame-portrait" data-img="assets/gallery/photo_10.jpg" data-caption="Dressed in emerald green, looking like absolute royalty.">
+            <div class="frame-pin"></div>
+            <div class="frame-inner">
+              <div class="frame-img-box pos-portrait-top">
+                <img src="assets/gallery/photo_10.jpg" alt="Memory 10" class="frame-photo" loading="lazy">
+              </div>
+              <div class="frame-caption">
+                <span class="caption-date">Emerald Grace</span>
+                <p class="caption-text">"Dressed in green, looking like absolute royalty."</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Frame 11: Gentle Heart -->
+          <div class="premium-frame frame-tilt-right frame-portrait" data-img="assets/gallery/photo_11.jpg" data-caption="The sweetest, purest soul with the kindest smile.">
+            <div class="frame-pin"></div>
+            <div class="frame-inner">
+              <div class="frame-img-box pos-portrait-top">
+                <img src="assets/gallery/photo_11.jpg" alt="Memory 11" class="frame-photo" loading="lazy">
+              </div>
+              <div class="frame-caption">
+                <span class="caption-date">Gentle Heart</span>
+                <p class="caption-text">"The sweetest soul with the kindest smile."</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Frame 12: Headphones Chic -->
+          <div class="premium-frame frame-tilt-left frame-portrait" data-img="assets/gallery/photo_12.jpg" data-caption="Chic, stylish, and looking iconic without even trying.">
+            <div class="frame-pin"></div>
+            <div class="frame-inner">
+              <div class="frame-img-box pos-portrait-top">
+                <img src="assets/gallery/photo_12.jpg" alt="Memory 12" class="frame-photo" loading="lazy">
+              </div>
+              <div class="frame-caption">
+                <span class="caption-date">Effortlessly Cool</span>
+                <p class="caption-text">"Chic, stylish, and looking iconic without even trying."</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Frame 13: Little Details -->
+          <div class="premium-frame frame-tilt-right frame-portrait" data-img="assets/gallery/photo_13.jpg" data-caption="Every single detail about you is my favorite thing in this world.">
+            <div class="frame-pin"></div>
+            <div class="frame-inner">
+              <div class="frame-img-box pos-portrait-top">
+                <img src="assets/gallery/photo_13.jpg" alt="Memory 13" class="frame-photo" loading="lazy">
+              </div>
+              <div class="frame-caption">
+                <span class="caption-date">Little Details</span>
+                <p class="caption-text">"Every detail about you is my favorite thing in this world."</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Frame 14: Full Mirror Outfit Selfie -->
+          <div class="premium-frame frame-tilt-center frame-tall" data-img="assets/gallery/photo_14.jpg" data-caption="Mirror selfie perfection — my queen forever.">
+            <div class="frame-pin"></div>
+            <div class="frame-inner">
+              <div class="frame-img-box pos-tall-mirror">
+                <img src="assets/gallery/photo_14.jpg" alt="Memory 14" class="frame-photo" loading="lazy">
+              </div>
+              <div class="frame-caption">
+                <span class="caption-date">Head to Toe Perfection</span>
+                <p class="caption-text">"Mirror selfie perfection — my queen forever."</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 3. HEARTFELT LOVE LETTER CARD -->
+      <section class="section-block love-letter-section">
+        <div class="letter-card">
+          <div class="letter-stamp">
+            <span class="wax-seal-h">H</span>
+          </div>
+          
+          <h2 class="letter-heading">To the Girl Who Stole My Heart...</h2>
+          
+          <div class="letter-body">
+            <p>
+              Happy Birthday, my love! Today is all about you — your kindness, your gorgeous smile, your beautiful energy, and everything that makes you so undeniably unique.
+            </p>
+            <p>
+              No matter where life takes us, being by your side is my favorite place in the whole universe. I hope this little surprise made you smile as brightly as you make me smile every single day.
+            </p>
+            <p>
+              I can't wait for our date. Here’s to another year of love, endless laughter, great food, and making thousands more unforgettable memories together.
+            </p>
+            <p class="letter-signature">
+              Forever yours, with all my love,<br>
+              <span class="signature-name">Hassan</span>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. INTERACTIVE CELEBRATION TOOLBAR -->
+      <section class="section-block final-actions-section">
+        <div class="interactive-button-cluster">
+          <button id="btn-floating-hearts" type="button" class="btn-primary btn-glow">
+            <span>Shower of Hearts</span>
+          </button>
+          <button id="btn-fire-confetti" type="button" class="btn-secondary">
+            <span>Burst Confetti</span>
+          </button>
+        </div>
+        
+        <p class="footer-credit">
+          Designed with unconditional love &bull; Happy Birthday
+        </p>
+      </section>
+
+    </div>
+  </section>
+
+  <!-- Auto-scroll status pill -->
+  <div id="autoscroll-pill" class="autoscroll-badge-pill hidden">
+    <span class="pill-dot"></span>
+    <span id="autoscroll-pill-text" class="pill-text">Cinematic Tour</span>
+    <button type="button" id="btn-toggle-autoscroll" class="pill-action-btn">Pause</button>
+  </div>
+
+  <!-- Fullscreen Photo Lightbox Modal -->
+  <div id="photo-lightbox" class="lightbox-modal hidden" aria-hidden="true">
+    <div class="lightbox-backdrop"></div>
+    <div class="lightbox-container">
+      <div class="lightbox-image-box">
+        <img id="lightbox-img" src="" alt="Full view" class="lightbox-image">
+      </div>
+      <p id="lightbox-caption" class="lightbox-caption-text"></p>
+      <button type="button" id="lightbox-close-btn" class="lightbox-close-btn" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Fullscreen Canvas for Celebration Confetti -->
+  <canvas id="fullscreen-confetti-canvas" class="confetti-canvas-layer"></canvas>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
