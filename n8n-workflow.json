@@ -1,0 +1,79 @@
+{
+  "name": "Birthday Date Proposal Notification",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "date-proposal",
+        "responseMode": "onReceived",
+        "responseData": "allEntries",
+        "options": {}
+      },
+      "id": "1a2b3c4d-0001-4000-8000-000000000001",
+      "name": "Webhook Receiver",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        260,
+        300
+      ],
+      "webhookId": "date-proposal"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body || $input.first().json;\n\nconst dateTime = body.date_and_time || 'Not specified';\nconst venue = body.venue || 'Not specified';\nconst loveAnswer = body.love_answer || 'Officially Confirmed';\nconst submittedAt = body.submitted_at || new Date().toLocaleString();\n\nconst subject = `She said YES! Confirmed Date: ${venue} (${dateTime})`;\n\nconst htmlBody = `\n<div style=\"font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 580px; margin: 0 auto; background-color: #FFFDF9; border: 1px solid #FFE4E6; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(225, 29, 72, 0.08);\">\n  <div style=\"background: linear-gradient(135deg, #E11D48 0%, #BE123C 100%); padding: 28px 24px; text-align: center;\">\n    <h1 style=\"color: #FFFFFF; font-size: 22px; margin: 0 0 6px 0; font-weight: 700; letter-spacing: -0.02em;\">Date Confirmed!</h1>\n    <p style=\"color: #FFE4E6; font-size: 14px; margin: 0;\">She just submitted her answers on the birthday website</p>\n  </div>\n\n  <div style=\"padding: 28px 24px;\">\n    <div style=\"background: #FFFFFF; border: 1px solid #F1F5F9; border-radius: 12px; padding: 20px; margin-bottom: 20px;\">\n      <table style=\"width: 100%; border-collapse: collapse;\">\n        <tr>\n          <td style=\"padding: 10px 0; color: #64748B; font-size: 13px; text-transform: uppercase; font-weight: 600; width: 40%;\">Date & Time</td>\n          <td style=\"padding: 10px 0; color: #0F172A; font-size: 15px; font-weight: 700;\">${dateTime}</td>\n        </tr>\n        <tr>\n          <td style=\"padding: 10px 0; border-top: 1px solid #F1F5F9; color: #64748B; font-size: 13px; text-transform: uppercase; font-weight: 600;\">Selected Venue</td>\n          <td style=\"padding: 10px 0; border-top: 1px solid #F1F5F9; color: #E11D48; font-size: 15px; font-weight: 700;\">${venue}</td>\n        </tr>\n        <tr>\n          <td style=\"padding: 10px 0; border-top: 1px solid #F1F5F9; color: #64748B; font-size: 13px; text-transform: uppercase; font-weight: 600;\">Love Status</td>\n          <td style=\"padding: 10px 0; border-top: 1px solid #F1F5F9; color: #0F172A; font-size: 15px; font-weight: 600;\">${loveAnswer}</td>\n        </tr>\n        <tr>\n          <td style=\"padding: 10px 0; border-top: 1px solid #F1F5F9; color: #64748B; font-size: 13px; text-transform: uppercase; font-weight: 600;\">Submitted At</td>\n          <td style=\"padding: 10px 0; border-top: 1px solid #F1F5F9; color: #64748B; font-size: 14px;\">${submittedAt}</td>\n        </tr>\n      </table>\n    </div>\n\n    <p style=\"text-align: center; color: #94A3B8; font-size: 12px; margin: 0;\">\n      Antigravity Romantic Birthday Proposal &bull; Hassan\n    </p>\n  </div>\n</div>\n`;\n\nreturn [{\n  json: {\n    subject,\n    htmlBody,\n    dateTime,\n    venue,\n    loveAnswer,\n    submittedAt\n  }\n}];"
+      },
+      "id": "1a2b3c4d-0001-4000-8000-000000000002",
+      "name": "Format Romantic Email",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "toEmail": "={{ $env.MY_EMAIL || 'your-email@gmail.com' }}",
+        "subject": "={{ $json.subject }}",
+        "html": "={{ $json.htmlBody }}",
+        "options": {}
+      },
+      "id": "1a2b3c4d-0001-4000-8000-000000000003",
+      "name": "Send Email Notification",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        700,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Receiver": {
+      "main": [
+        [
+          {
+            "node": "Format Romantic Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Romantic Email": {
+      "main": [
+        [
+          {
+            "node": "Send Email Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
