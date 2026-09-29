@@ -1028,6 +1028,7 @@ function spawnFlyingBalloons() {
 
   function createBalloon() {
     if (!container.classList.contains('active')) return;
+    if (container.children.length >= 6) return;
 
     const balloon = document.createElement('div');
     balloon.className = 'floating-balloon';
