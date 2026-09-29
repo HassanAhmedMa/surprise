@@ -13,6 +13,27 @@ import secondCupImg from './assets/places/second_cup.jpg';
 import armadaImg from './assets/places/armada_cafe.jpg';
 import cilantroImg from './assets/places/cilantro_cafe.jpg';
 
+// Pre-bundle all 14 memories so Vite hashes & caches them at startup
+import photo01 from './assets/gallery/photo_01.jpg';
+import photo02 from './assets/gallery/photo_02.jpg';
+import photo03 from './assets/gallery/photo_03.jpg';
+import photo04 from './assets/gallery/photo_04.jpg';
+import photo05 from './assets/gallery/photo_05.jpg';
+import photo06 from './assets/gallery/photo_06.jpg';
+import photo07 from './assets/gallery/photo_07.jpg';
+import photo08 from './assets/gallery/photo_08.jpg';
+import photo09 from './assets/gallery/photo_09.jpg';
+import photo10 from './assets/gallery/photo_10.jpg';
+import photo11 from './assets/gallery/photo_11.jpg';
+import photo12 from './assets/gallery/photo_12.jpg';
+import photo13 from './assets/gallery/photo_13.jpg';
+import photo14 from './assets/gallery/photo_14.jpg';
+
+const allGalleryPhotos = [
+  photo01, photo02, photo03, photo04, photo05, photo06, photo07,
+  photo08, photo09, photo10, photo11, photo12, photo13, photo14
+];
+
 const venueImages = {
   cio: cioImg,
   primos: primosImg,
@@ -21,6 +42,8 @@ const venueImages = {
   armada: armadaImg,
   cilantro: cilantroImg
 };
+
+window._preloadedImages = [];
 
 // ========================================================
 // STATE MANAGEMENT
@@ -415,8 +438,28 @@ function triggerBurstConfetti(e) {
 // Preloads & decodes all 14 gallery photos + places during countdown
 // ========================================================
 function preloadAllGalleryAssets() {
-  const images = document.querySelectorAll('img');
-  images.forEach(img => {
+  // 1. Immediately preload and decode all 14 full-resolution gallery photos
+  allGalleryPhotos.forEach(src => {
+    const loader = new Image();
+    loader.src = src;
+    if (typeof loader.decode === 'function') {
+      loader.decode().catch(() => {});
+    }
+    window._preloadedImages.push(loader);
+  });
+
+  // 2. Preload and decode all venue thumbnails
+  Object.values(venueImages).forEach(src => {
+    const loader = new Image();
+    loader.src = src;
+    if (typeof loader.decode === 'function') {
+      loader.decode().catch(() => {});
+    }
+    window._preloadedImages.push(loader);
+  });
+
+  // 3. Preload all DOM images
+  document.querySelectorAll('img').forEach(img => {
     const src = img.currentSrc || img.src || img.getAttribute('src');
     if (src) {
       const loader = new Image();
@@ -424,19 +467,7 @@ function preloadAllGalleryAssets() {
       if (typeof loader.decode === 'function') {
         loader.decode().catch(() => {});
       }
-    }
-  });
-
-  // Also pre-cache each frame's inner image
-  document.querySelectorAll('.premium-frame').forEach(frame => {
-    const inner = frame.querySelector('.frame-photo');
-    const targetSrc = inner ? (inner.currentSrc || inner.src) : frame.getAttribute('data-img');
-    if (targetSrc) {
-      const l = new Image();
-      l.src = targetSrc;
-      if (typeof l.decode === 'function') {
-        l.decode().catch(() => {});
-      }
+      window._preloadedImages.push(loader);
     }
   });
 }
