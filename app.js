@@ -5,6 +5,23 @@
 
 import { NOTIFICATION_CONFIG } from './config.js';
 
+// Pre-bundled venue images to guarantee 100% production asset resolution
+import cioImg from './assets/places/cio_trattoria.jpg';
+import primosImg from './assets/places/primos_pizza.jpg';
+import treeTrunkImg from './assets/places/tree_trunk.jpg';
+import secondCupImg from './assets/places/second_cup.jpg';
+import armadaImg from './assets/places/armada_cafe.jpg';
+import cilantroImg from './assets/places/cilantro_cafe.jpg';
+
+const venueImages = {
+  cio: cioImg,
+  primos: primosImg,
+  treetrunk: treeTrunkImg,
+  secondcup: secondCupImg,
+  armada: armadaImg,
+  cilantro: cilantroImg
+};
+
 // ========================================================
 // STATE MANAGEMENT
 // ========================================================
@@ -14,10 +31,11 @@ const appState = {
   selectedDateTimeFormatted: "Tonight at 8:00 PM",
   loveAnswer: "Officially Confirmed",
   selectedPlace: {
+    id: "cio",
     name: "CIO x Trattoria Italiana",
     type: "Dinner",
     area: "Heliopolis",
-    img: "assets/places/cio_trattoria.jpg"
+    img: cioImg
   },
   audioPlaying: false
 };
@@ -757,12 +775,15 @@ function initStep4() {
       allCards.forEach(c => c.classList.remove('selected'));
       card.classList.add('selected');
 
+      const placeId = card.getAttribute('data-place-id');
       const placeName = card.getAttribute('data-place-name');
       const placeType = card.getAttribute('data-place-type');
       const placeArea = card.getAttribute('data-place-area');
-      const placeImg = card.getAttribute('data-place-img');
+      const thumb = card.querySelector('.place-thumb');
+      const placeImg = venueImages[placeId] || (thumb && (thumb.currentSrc || thumb.src)) || card.getAttribute('data-place-img') || cioImg;
 
       appState.selectedPlace = {
+        id: placeId,
         name: placeName,
         type: placeType,
         area: placeArea,
@@ -798,16 +819,17 @@ function revealCelebrationPage() {
       const el = document.getElementById(id);
       if (el) el.textContent = val;
     };
-    const safeSetSrc = (id, val) => {
-      const el = document.getElementById(id);
-      if (el) el.src = val;
-    };
 
     if (appState.selectedPlace) {
       safeSetText('ticket-venue-name', appState.selectedPlace.name);
       safeSetText('ticket-venue-area', `${appState.selectedPlace.area}, Cairo`);
       safeSetText('ticket-venue-loc', `${appState.selectedPlace.area}, Cairo`);
-      safeSetSrc('ticket-venue-img', appState.selectedPlace.img);
+
+      const venueImgEl = document.getElementById('ticket-venue-img');
+      if (venueImgEl) {
+        venueImgEl.onerror = () => { venueImgEl.src = cioImg; };
+        venueImgEl.src = appState.selectedPlace.img || cioImg;
+      }
     }
     safeSetText('ticket-datetime-val', appState.selectedDateTimeFormatted);
     safeSetText('ticket-love-status', appState.loveAnswer);
@@ -970,22 +992,24 @@ function spawnFlyingBalloons() {
 }
 
 // ========================================================
-// CINEMATIC AUTO-SCROLL (With Smooth Unlocking at End)
+// CINEMATIC AUTO-SCROLL (Rock-solid, steady 60/120fps delta-time engine)
 // ========================================================
 let autoScrollAnimId = null;
 let isAutoScrolling = false;
+let scrollPos = 0;
+let lastScrollTimestamp = 0;
+const SCROLL_SPEED_PX_PER_SEC = 165; // Solid, steady constant rate (~165px/sec)
 
 function startCinematicAutoScroll() {
   const pill = document.getElementById('autoscroll-pill');
-  const pillText = document.getElementById('autoscroll-pill-text');
   const toggleBtn = document.getElementById('btn-toggle-autoscroll');
 
-  // Brief 1.2 second pause to take in the celebration header before smooth glide
   setTimeout(() => {
     if (pill) pill.classList.remove('hidden');
     isAutoScrolling = true;
+    scrollPos = window.scrollY || document.documentElement.scrollTop;
+    lastScrollTimestamp = performance.now();
 
-    // Detect user manual interaction to pause gently
     const onUserTouch = () => {
       if (isAutoScrolling) {
         pauseAutoScroll();
@@ -993,21 +1017,27 @@ function startCinematicAutoScroll() {
     };
     window.addEventListener('touchstart', onUserTouch, { passive: true });
     window.addEventListener('wheel', onUserTouch, { passive: true });
+    window.addEventListener('pointerdown', onUserTouch, { passive: true });
 
-    function step() {
+    function step(timestamp) {
       if (!isAutoScrolling) return;
 
-      const currentScroll = window.scrollY || document.documentElement.scrollTop;
+      const elapsed = (timestamp - lastScrollTimestamp) / 1000;
+      lastScrollTimestamp = timestamp;
+
+      // Clamp elapsed time to prevent jumps when tab switches
+      const delta = Math.min(elapsed, 0.05);
+      scrollPos += SCROLL_SPEED_PX_PER_SEC * delta;
+
       const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
 
-      // When reached the end
-      if (currentScroll >= maxScroll - 20) {
+      if (scrollPos >= maxScroll - 15) {
+        window.scrollTo(0, maxScroll);
         finishAutoScroll();
         return;
       }
 
-      // Smooth brisk scroll (~3.8 px per frame for engaging pace)
-      window.scrollBy(0, 3.8);
+      window.scrollTo(0, scrollPos);
       autoScrollAnimId = requestAnimationFrame(step);
     }
 
@@ -1022,12 +1052,13 @@ function startCinematicAutoScroll() {
         }
       };
     }
-  }, 1200);
+  }, 1000);
 }
 
 function pauseAutoScroll() {
   isAutoScrolling = false;
   if (autoScrollAnimId) cancelAnimationFrame(autoScrollAnimId);
+  scrollPos = window.scrollY || document.documentElement.scrollTop;
   const toggleBtn = document.getElementById('btn-toggle-autoscroll');
   const pillText = document.getElementById('autoscroll-pill-text');
   if (toggleBtn) toggleBtn.textContent = 'Resume';
@@ -1036,22 +1067,34 @@ function pauseAutoScroll() {
 
 function resumeAutoScroll() {
   isAutoScrolling = true;
+  scrollPos = window.scrollY || document.documentElement.scrollTop;
+  lastScrollTimestamp = performance.now();
   const toggleBtn = document.getElementById('btn-toggle-autoscroll');
   const pillText = document.getElementById('autoscroll-pill-text');
   if (toggleBtn) toggleBtn.textContent = 'Pause';
   if (pillText) pillText.textContent = 'Cinematic Tour';
 
-  function step() {
+  function step(timestamp) {
     if (!isAutoScrolling) return;
-    const currentScroll = window.scrollY || document.documentElement.scrollTop;
+
+    const elapsed = (timestamp - lastScrollTimestamp) / 1000;
+    lastScrollTimestamp = timestamp;
+
+    const delta = Math.min(elapsed, 0.05);
+    scrollPos += SCROLL_SPEED_PX_PER_SEC * delta;
+
     const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-    if (currentScroll >= maxScroll - 20) {
+
+    if (scrollPos >= maxScroll - 15) {
+      window.scrollTo(0, maxScroll);
       finishAutoScroll();
       return;
     }
-    window.scrollBy(0, 3.8);
+
+    window.scrollTo(0, scrollPos);
     autoScrollAnimId = requestAnimationFrame(step);
   }
+
   autoScrollAnimId = requestAnimationFrame(step);
 }
 
