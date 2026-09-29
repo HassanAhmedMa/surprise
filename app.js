@@ -3,6 +3,8 @@
  * Built with 60fps animations, mobile-first responsiveness, and pure Web APIs
  */
 
+import { NOTIFICATION_CONFIG } from './config.js';
+
 // ========================================================
 // STATE MANAGEMENT
 // ========================================================
@@ -843,9 +845,87 @@ function revealCelebrationPage() {
       console.warn('Audio autoplay blocked:', err);
     }
 
+    // Dispatch submission notification via Webhook & Email
+    try {
+      dispatchSubmissionNotification();
+    } catch (err) {
+      console.warn('Notification dispatch error:', err);
+    }
+
     // Begin cinematic auto-scroll
     startCinematicAutoScroll();
   }, 600);
+}
+
+// ========================================================
+// NOTIFICATION DISPATCHER (Email & Webhook)
+// ========================================================
+async function dispatchSubmissionNotification() {
+  const payload = {
+    date_and_time: appState.selectedDateTimeFormatted,
+    venue: appState.selectedPlace ? `${appState.selectedPlace.name} (${appState.selectedPlace.type} - ${appState.selectedPlace.area})` : 'Not selected',
+    love_answer: appState.loveAnswer || 'Officially Confirmed',
+    submitted_at: new Date().toLocaleString(),
+    browser: navigator.userAgent
+  };
+
+  // 1. Send via Webhook URL (Discord, Make.com, Zapier, n8n, etc.)
+  if (NOTIFICATION_CONFIG.webhookUrl && NOTIFICATION_CONFIG.webhookUrl.trim() !== '') {
+    try {
+      const url = NOTIFICATION_CONFIG.webhookUrl.trim();
+      const isDiscord = url.includes('discord.com/api/webhooks');
+
+      const body = isDiscord ? JSON.stringify({
+        username: "Date Proposal Bot",
+        avatar_url: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=128&q=80",
+        embeds: [{
+          title: "She submitted the date reservation!",
+          color: 0xE11D48,
+          description: "Here is what she selected:",
+          fields: [
+            { name: "Will you go on a date with me?", value: "Yes", inline: true },
+            { name: "Do you love me?", value: String(payload.love_answer), inline: true },
+            { name: "Scheduled Date & Time", value: String(payload.date_and_time), inline: false },
+            { name: "Selected Venue", value: String(payload.venue), inline: false },
+            { name: "Submitted At", value: String(payload.submitted_at), inline: false }
+          ],
+          footer: { text: "Birthday Date Proposal Notification" },
+          timestamp: new Date().toISOString()
+        }]
+      }) : JSON.stringify(payload);
+
+      fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body
+      }).catch(err => console.warn('Webhook delivery notice:', err));
+    } catch (err) {
+      console.warn('Webhook exception:', err);
+    }
+  }
+
+  // 2. Send via Email (FormSubmit.co - instant inbox delivery)
+  if (NOTIFICATION_CONFIG.email && NOTIFICATION_CONFIG.email.trim() !== '') {
+    try {
+      const targetEmail = NOTIFICATION_CONFIG.email.trim();
+      fetch(`https://formsubmit.co/ajax/${encodeURIComponent(targetEmail)}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          _subject: `She said YES! Birthday Date Details (${payload.date_and_time})`,
+          "Date & Time": payload.date_and_time,
+          "Selected Venue": payload.venue,
+          "Love Status": payload.love_answer,
+          "Submitted At": payload.submitted_at
+        })
+      }).catch(err => console.warn('Email delivery notice:', err));
+    } catch (err) {
+      console.warn('Email dispatch exception:', err);
+    }
+  }
 }
 
 function spawnFlyingBalloons() {
