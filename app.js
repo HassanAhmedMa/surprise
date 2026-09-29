@@ -411,9 +411,43 @@ function triggerBurstConfetti(e) {
 }
 
 // ========================================================
+// ASSET PRELOADER (Instant photo display, zero scroll delay)
+// Preloads & decodes all 14 gallery photos + places during countdown
+// ========================================================
+function preloadAllGalleryAssets() {
+  const images = document.querySelectorAll('img');
+  images.forEach(img => {
+    const src = img.currentSrc || img.src || img.getAttribute('src');
+    if (src) {
+      const loader = new Image();
+      loader.src = src;
+      if (typeof loader.decode === 'function') {
+        loader.decode().catch(() => {});
+      }
+    }
+  });
+
+  // Also pre-cache each frame's inner image
+  document.querySelectorAll('.premium-frame').forEach(frame => {
+    const inner = frame.querySelector('.frame-photo');
+    const targetSrc = inner ? (inner.currentSrc || inner.src) : frame.getAttribute('data-img');
+    if (targetSrc) {
+      const l = new Image();
+      l.src = targetSrc;
+      if (typeof l.decode === 'function') {
+        l.decode().catch(() => {});
+      }
+    }
+  });
+}
+
+// ========================================================
 // STAGE 0: COUNTDOWN SCREEN (5 Seconds with growing pulse & confetti)
 // ========================================================
 function startCountdown() {
+  // Immediately start preloading and GPU decoding all images in parallel
+  preloadAllGalleryAssets();
+
   const screen = document.getElementById('countdown-screen');
   const numberEl = document.getElementById('countdown-number');
   const ringFill = document.getElementById('countdown-ring-fill');
@@ -1136,7 +1170,8 @@ function initLightbox() {
 
   document.querySelectorAll('.premium-frame').forEach(frame => {
     frame.addEventListener('click', () => {
-      const src = frame.getAttribute('data-img');
+      const innerImg = frame.querySelector('.frame-photo');
+      const src = innerImg ? (innerImg.currentSrc || innerImg.src) : frame.getAttribute('data-img');
       const caption = frame.getAttribute('data-caption');
       if (src && imgEl) {
         imgEl.src = src;
