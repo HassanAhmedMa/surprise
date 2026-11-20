@@ -5,42 +5,32 @@
 
 import { NOTIFICATION_CONFIG } from './config.js';
 
-// Pre-bundled venue images to guarantee 100% production asset resolution
-import cioImg from './assets/places/cio_trattoria.jpg';
-import primosImg from './assets/places/primos_pizza.jpg';
-import treeTrunkImg from './assets/places/tree_trunk.jpg';
-import secondCupImg from './assets/places/second_cup.jpg';
-import armadaImg from './assets/places/armada_cafe.jpg';
-import cilantroImg from './assets/places/cilantro_cafe.jpg';
-
-// Pre-bundle all 14 memories so Vite hashes & caches them at startup
-import photo01 from './assets/gallery/photo_01.jpg';
-import photo02 from './assets/gallery/photo_02.jpg';
-import photo03 from './assets/gallery/photo_03.jpg';
-import photo04 from './assets/gallery/photo_04.jpg';
-import photo05 from './assets/gallery/photo_05.jpg';
-import photo06 from './assets/gallery/photo_06.jpg';
-import photo07 from './assets/gallery/photo_07.jpg';
-import photo08 from './assets/gallery/photo_08.jpg';
-import photo09 from './assets/gallery/photo_09.jpg';
-import photo10 from './assets/gallery/photo_10.jpg';
-import photo11 from './assets/gallery/photo_11.jpg';
-import photo12 from './assets/gallery/photo_12.jpg';
-import photo13 from './assets/gallery/photo_13.jpg';
-import photo14 from './assets/gallery/photo_14.jpg';
+const defaultVenueImg = 'assets/places/cio_trattoria.jpg';
 
 const allGalleryPhotos = [
-  photo01, photo02, photo03, photo04, photo05, photo06, photo07,
-  photo08, photo09, photo10, photo11, photo12, photo13, photo14
+  'assets/gallery/photo_01.jpg',
+  'assets/gallery/photo_02.jpg',
+  'assets/gallery/photo_03.jpg',
+  'assets/gallery/photo_04.jpg',
+  'assets/gallery/photo_05.jpg',
+  'assets/gallery/photo_06.jpg',
+  'assets/gallery/photo_07.jpg',
+  'assets/gallery/photo_08.jpg',
+  'assets/gallery/photo_09.jpg',
+  'assets/gallery/photo_10.jpg',
+  'assets/gallery/photo_11.jpg',
+  'assets/gallery/photo_12.jpg',
+  'assets/gallery/photo_13.jpg',
+  'assets/gallery/photo_14.jpg'
 ];
 
 const venueImages = {
-  cio: cioImg,
-  primos: primosImg,
-  treetrunk: treeTrunkImg,
-  secondcup: secondCupImg,
-  armada: armadaImg,
-  cilantro: cilantroImg
+  cio: 'assets/places/cio_trattoria.jpg',
+  primos: 'assets/places/primos_pizza.jpg',
+  treetrunk: 'assets/places/tree_trunk.jpg',
+  secondcup: 'assets/places/second_cup.jpg',
+  armada: 'assets/places/armada_cafe.jpg',
+  cilantro: 'assets/places/cilantro_cafe.jpg'
 };
 
 window._preloadedImages = [];
@@ -58,7 +48,7 @@ const appState = {
     name: "CIO x Trattoria Italiana",
     type: "Dinner",
     area: "Heliopolis",
-    img: cioImg
+    img: defaultVenueImg
   },
   audioPlaying: false
 };
@@ -845,7 +835,7 @@ function initStep4() {
       const placeType = card.getAttribute('data-place-type');
       const placeArea = card.getAttribute('data-place-area');
       const thumb = card.querySelector('.place-thumb');
-      const placeImg = venueImages[placeId] || (thumb && (thumb.currentSrc || thumb.src)) || card.getAttribute('data-place-img') || cioImg;
+      const placeImg = venueImages[placeId] || (thumb && (thumb.currentSrc || thumb.src)) || card.getAttribute('data-place-img') || defaultVenueImg;
 
       appState.selectedPlace = {
         id: placeId,
@@ -892,8 +882,8 @@ function revealCelebrationPage() {
 
       const venueImgEl = document.getElementById('ticket-venue-img');
       if (venueImgEl) {
-        venueImgEl.onerror = () => { venueImgEl.src = cioImg; };
-        venueImgEl.src = appState.selectedPlace.img || cioImg;
+        venueImgEl.onerror = () => { venueImgEl.src = defaultVenueImg; };
+        venueImgEl.src = appState.selectedPlace.img || defaultVenueImg;
       }
     }
     safeSetText('ticket-datetime-val', appState.selectedDateTimeFormatted);
